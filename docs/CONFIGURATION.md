@@ -51,9 +51,7 @@ openssl rand -hex 16
 
 ```powershell
 # Windows (PowerShell)
-[System.BitConverter]::ToString(
-  [System.Security.Cryptography.RandomNumberGenerator]::GetBytes(16)
-).Replace("-","").ToLower()
+$b = New-Object byte[] 16; [System.Security.Cryptography.RNGCryptoServiceProvider]::Create().GetBytes($b); [System.BitConverter]::ToString($b).Replace('-','').ToLower()
 ```
 
 **Minimum recommended length:** 32 hexadecimal characters (128-bit). Shorter tokens are functional but offer reduced protection against brute-force guessing on publicly hosted deployments.
