@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a1b26">
+    <title>WhatsApp Archive Viewer — Local & Private</title>
+
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+    <meta name="description"
+        content="Render WhatsApp .txt export archives as a searchable, dark-mode chat UI. Fully local — no uploads, no third-party APIs. Supports large archives and multi-chat viewing." />
+    <meta name="keywords"
+        content="whatsapp export viewer, whatsapp archive viewer, chat history viewer, _chat.txt parser, offline whatsapp viewer, local whatsapp backup, whatsapp plain text export, privacy chat viewer, whatsapp history search" />
+    <meta name="author" content="Nauman Shahid" />
+    <meta name="theme-color" content="#1a1b26" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://your-deployment-url.com" />
+    <meta property="og:title" content="WhatsApp Archive Viewer — Local & Private" />
+    <meta property="og:description"
+        content="Render WhatsApp export archives as a searchable dark-mode chat UI. No uploads. No dependencies. Runs entirely in the browser from local files." />
+    <meta property="og:image" content="https://your-deployment-url.com/og-image.png" />
+    <meta property="og:site_name" content="your-site-name" />
+
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://your-deployment-url.com" />
+    <meta property="twitter:title" content="WhatsApp Archive Viewer — Local & Private" />
+    <meta property="twitter:description"
+        content="Browse your WhatsApp export history locally. Searchable, dark-mode UI. No uploads, no dependencies." />
+    <meta property="twitter:image" content="https://your-deployment-url.com/og-image.png" />
+
+    <link rel="icon" type="image/png" href="https://your-deployment-url.com/favicon.png" />
+    <link rel="apple-touch-icon" href="https://your-deployment-url.com/favicon.png" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="WA Viewer" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app-container">
+
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <svg class="icon-svg icon-md" viewBox="0 0 24 24" style="margin-right: 8px;">
+                    <path
+                        d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                    </path>
+                </svg>
+                <span>WhatsApp</span>
+            </div>
+            <div class="search-container">
+                <input type="text" id="contactSearch" class="search-input" placeholder="Search or start new chat">
+            </div>
+            <div class="chat-list" id="chatList">
+                <div style="padding:40px; text-align:center; color:var(--text-secondary);">
+                    <div>Loading chats...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-area" id="chatArea">
+            <div class="chat-header">
+                <div class="chat-header-left">
+                    <button class="back-btn" onclick="closeMobileChat()">
+                        <svg class="icon-svg icon-md">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                    <div class="chat-title" id="chatTitle">Select a Chat</div>
+                </div>
+                <div style="display:flex; gap:16px; align-items:center;">
+                    <input type="text" id="msgSearch" class="chat-search-box" placeholder="Search messages..."
+                        style="display:none;">
+                    <button class="back-btn drawer-toggle" style="display:none; color:var(--text-primary);"
+                        onclick="toggleDrawer()">
+                        <svg class="icon-svg icon-md">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="9" y1="3" x2="9" y2="21"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="messages" id="messageContainer">
+                <div
+                    style="height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--text-secondary); opacity:0.6;">
+                    <svg class="icon-svg" viewBox="0 0 24 24"
+                        style="width: 64px; height: 64px; opacity: 0.5; stroke-width: 1;">
+                        <path
+                            d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+
+            <button id="jumpToPresentBtn" class="scroll-down-btn" onclick="window.jumpToLatest()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+        </div>
+
+        <div class="media-drawer" id="mediaDrawer">
+            <div class="drawer-header">
+                <span style="display:flex; gap:10px; align-items:center; overflow:hidden;">
+                    <svg class="icon-svg icon-md" viewBox="0 0 24 24" style="margin-right: 10px;">
+                        <path
+                            d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48">
+                        </path>
+                    </svg>
+                    <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Attachments</span>
+                </span>
+                <button class="drawer-close-btn" onclick="toggleDrawer()">
+                    <svg class="icon-svg icon-md">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="drawer-tabs">
+                <div class="tab active" onclick="window.switchTab(this, 'images')">Media</div>
+                <div class="tab" onclick="window.switchTab(this, 'videos')">Video</div>
+                <div class="tab" onclick="window.switchTab(this, 'docs')">Files</div>
+            </div>
+            <div class="drawer-content" id="drawerContent">
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module" src="app.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const originalLoadChat = window.loadChat;
+            if (typeof originalLoadChat === 'function') {
+                window.loadChat = function (id) {
+                    originalLoadChat(id);
+                    document.getElementById('chatArea').classList.add('active');
+                    document.getElementById('mediaDrawer').classList.remove('active');
+                };
+            }
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.video-menu-btn') && !e.target.closest('.ctx-menu')) {
+                    document.querySelectorAll('.ctx-menu').forEach(el => el.style.display = 'none');
+                }
+            });
+        });
+
+        function closeMobileChat() {
+            document.getElementById('chatArea').classList.remove('active');
+            document.getElementById('msgSearch').value = '';
+            if (window.resetSearchState) window.resetSearchState();
+        }
+
+        function toggleDrawer() {
+            const drawer = document.getElementById('mediaDrawer');
+            if (drawer.classList.contains('active')) {
+                drawer.classList.remove('active');
+            } else {
+                drawer.classList.add('active');
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            const drawer = document.getElementById('mediaDrawer');
+            if (window.innerWidth > 768) {
+                drawer.classList.remove('active');
+                drawer.style.display = '';
+            }
+        });
+    </script>
+</body>
+
+</html>

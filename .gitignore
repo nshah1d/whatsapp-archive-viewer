@@ -1,0 +1,10 @@
+# OS-generated metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# WhatsApp export folders — personal chat data, never commit
+# Add each folder name individually below this line.
+# Example:
+# Alice Export/
+# Family Group/
